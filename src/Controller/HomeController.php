@@ -8,8 +8,11 @@ use Cassandra\Date;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Router;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HomeController extends AbstractController
@@ -20,7 +23,7 @@ class HomeController extends AbstractController
         private SportPlanningRepository $planningRepository
     )
     {
-        $this->planningRepository = $this->em->getRepository(SportPlanning::class);
+
     }
 
     #[Route('/', name: 'app_home')]
@@ -68,9 +71,18 @@ class HomeController extends AbstractController
     private function displayWeather(SportPlanning $sportSession): array {
         $sessionDate = $sportSession->getDate();
 
+        $apiUrl = $this->generateUrl('weather_client', [
+            'latitude' => 45.78,
+            'longitude' => 3.09,
+            'hourly' => 'temperature_2m,precipitation_probability,precipitation',
+            'forecast_days' => 1,
+            'start_date' => $sessionDate,
+            'end_date' => $sessionDate
+        ]);
+
         $response = $this->client->request(
             'GET',
-            'https://api.open-meteo.com/v1/forecast?latitude=45.78&longitude=3.09&hourly=temperature_2m,precipitation_probability,precipitation&forecast_days=1&start_date='.$sessionDate.'&end_date='.$sessionDate
+            $apiUrl
         );
 
         $weatherData = $response->toArray();
