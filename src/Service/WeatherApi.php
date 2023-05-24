@@ -45,14 +45,13 @@ class WeatherApi
 
         $clearData = [];
 
+        $startTime = $sportSession->getStartingDateTime()->format('H:i');
+        $endTime = $sportSession->getEndingDateTime()->format('H:i');
+
         for ($i = 0; $i < count($daysAndHours); $i++) {
             $hourOfDay = substr($daysAndHours[$i], 11, 5);
-            $hourOfDayFormated = DateTime::createFromFormat('H:i', $hourOfDay);
+            $hourOfDayFormated = DateTime::createFromFormat('H:i', $hourOfDay)->format('H:i');
 
-
-
-            $startTime = $sportSession->getStartingDateTime();
-            $endTime = $sportSession->getEndingDateTime();
 
             if ($hourOfDayFormated >= $startTime && $hourOfDayFormated <= $endTime) {
                 $clearData[$hourOfDay] = [
@@ -63,6 +62,7 @@ class WeatherApi
             }
 
         }
+
         return $clearData;
     }
 }
