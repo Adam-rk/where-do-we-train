@@ -25,6 +25,9 @@ class SportPlanning
     #[ORM\Column(length: 255)]
     private ?string $endTime = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $palce = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -74,6 +77,18 @@ class SportPlanning
     public function setEndTime(string $endTime): self
     {
         $this->endTime = $endTime;
+
+        return $this;
+    }
+
+    public function getPalce(): ?string
+    {
+        return $this->palce;
+    }
+
+    public function setPalce(?string $palce): self
+    {
+        $this->palce = $palce;
 
         return $this;
     }
