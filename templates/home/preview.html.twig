@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% if canPracticeOutside %}
+        <p>Vous pouvez pratiquer à l'extérieur.</p>
+    {% else %}
+        <p>Vous ne pouvez pas pratiquer à l'extérieur.</p>
+    {% endif %}
+
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+

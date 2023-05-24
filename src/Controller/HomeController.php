@@ -26,7 +26,6 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function home(): Response
     {
-
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
         ]);
@@ -42,15 +41,19 @@ class HomeController extends AbstractController
             $diff = $date->diff(new \DateTime($currentDate));
 
             if ($diff->days <= 7) {
-                $this->displayWeather($sportSession);
+                $weather = $this->displayWeather($sportSession);
             }
-        }
 
-    return new Response("All good man");
+            $canPracticeOutside = $this->canPracticeOutside($weather);
+
+            return $this->render('home/preview.html.twig', [
+                'canPracticeOutside' => $canPracticeOutside,
+            ]);
+        }
 
     }
 
-    private function displayWeather(SportPlanning $sportSession) {
+    private function displayWeather(SportPlanning $sportSession): array {
         $sessionDate = $sportSession->getDate();
 
         $response = $this->client->request(
@@ -79,7 +82,7 @@ class HomeController extends AbstractController
             $startTime = DateTime::createFromFormat('H:i', $sportSession->getStartTime());
             $endTime = DateTime::createFromFormat('H:i', $sportSession->getEndTime());
 
-            if ($hourOfDay <= $endTime && $startTime <= $hourOfDayFormated) {
+            if ($hourOfDayFormated >= $startTime && $hourOfDayFormated <= $endTime) {
                 $clearData[$hourOfDay] = [
                     "temperature" => $temperatures[$i],
                     "precipitation_probability" => $precipitationProbabilities[$i],
@@ -88,7 +91,16 @@ class HomeController extends AbstractController
             }
 
         }
-        var_dump($clearData);
+        return $clearData;
+    }
 
+    private function canPracticeOutside(array $weather) {
+        foreach ($weather as $hourlyWeather) {
+            if ($hourlyWeather["temperature"] < 10 || $hourlyWeather["precipitation_probability"] > 50 || $hourlyWeather["precipitation"] > 0) {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
