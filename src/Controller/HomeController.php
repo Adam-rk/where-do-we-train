@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\SportPlanning;
 use App\Repository\SportPlanningRepository;
+use App\Service\WeatherApi;
 use Cassandra\Date;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,7 +19,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class HomeController extends AbstractController
 {
     public function __construct(
-        private HttpClientInterface $client,
+        private WeatherApi $weatherApi,
         private EntityManagerInterface $em,
         private SportPlanningRepository $planningRepository
     )
@@ -43,17 +44,16 @@ class HomeController extends AbstractController
 
         $currentDate = date('Y-m-d');
         foreach ($sportSessions as $sportSession) {
-            $date = new \DateTime($sportSession->getDate());
-
+            $date = $sportSession->getStartingDateTime();
             $diff = $date->diff(new \DateTime($currentDate));
 
             if ($diff->days <= 7 && $diff->days > 1) {
-                $weather = $this->displayWeather($sportSession);
+                $weather = $this->weatherApi->getWeather($sportSession);
                 $canPracticeOutside = $this->canPracticeOutside($weather);
                 if ($canPracticeOutside) {
-                    $sportSession->setPalce('Stade des Cézeaux');
+                    $sportSession->setPlace('Stade des Cézeaux');
                 } else {
-                    $sportSession->setPalce('Hoops Factory');
+                    $sportSession->setPlace('Hoops Factory');
                 }
                 $this->em->persist($sportSession);
                 $this->em->flush();
@@ -62,60 +62,10 @@ class HomeController extends AbstractController
             }
 
             return $this->render('home/preview.html.twig', [
-                'practicePlace' => $sportSession->getPalce(),
+                'practicePlace' => $sportSession->getPlace(),
             ]);
         }
 
-    }
-
-    private function displayWeather(SportPlanning $sportSession): array {
-        $sessionDate = $sportSession->getDate();
-
-        $apiUrl = $this->generateUrl('weather_client', [
-            'latitude' => 45.78,
-            'longitude' => 3.09,
-            'hourly' => 'temperature_2m,precipitation_probability,precipitation',
-            'forecast_days' => 1,
-            'start_date' => $sessionDate,
-            'end_date' => $sessionDate
-        ]);
-
-        $response = $this->client->request(
-            'GET',
-            $apiUrl
-        );
-
-        $weatherData = $response->toArray();
-
-        $daysAndHours= $weatherData["hourly"]["time"];
-
-        $temperatures = $weatherData["hourly"]["temperature_2m"];
-
-        $precipitationProbabilities = $weatherData["hourly"]["precipitation_probability"];
-
-        $precipitations = $weatherData["hourly"]["precipitation"];
-
-        $clearData = [];
-
-        for ($i = 0; $i < count($daysAndHours); $i++) {
-            $hourOfDay = substr($daysAndHours[$i], 11, 5);
-            $hourOfDayFormated = DateTime::createFromFormat('H:i', $hourOfDay);
-
-
-
-            $startTime = DateTime::createFromFormat('H:i', $sportSession->getStartTime());
-            $endTime = DateTime::createFromFormat('H:i', $sportSession->getEndTime());
-
-            if ($hourOfDayFormated >= $startTime && $hourOfDayFormated <= $endTime) {
-                $clearData[$hourOfDay] = [
-                    "temperature" => $temperatures[$i],
-                    "precipitation_probability" => $precipitationProbabilities[$i],
-                    "precipitation" => $precipitations[$i]
-                ];
-            }
-
-        }
-        return $clearData;
     }
 
     private function canPracticeOutside(array $weather) {
@@ -123,7 +73,6 @@ class HomeController extends AbstractController
             if ($hourlyWeather["temperature"] < 10 || $hourlyWeather["precipitation_probability"] > 50 || $hourlyWeather["precipitation"] > 0) {
                 return false;
             }
-
             return true;
         }
     }
