@@ -34,20 +34,32 @@ class HomeController extends AbstractController
     public function preview($promotion): Response {
         $sportSessions = $this->planningRepository->findBy(['promotion' => $promotion]);
 
+        if (empty($sportSessions)) {
+            return $this->render('home/nosessions.html.twig');
+        }
+
         $currentDate = date('Y-m-d');
         foreach ($sportSessions as $sportSession) {
             $date = new \DateTime($sportSession->getDate());
 
             $diff = $date->diff(new \DateTime($currentDate));
 
-            if ($diff->days <= 7) {
+            if ($diff->days <= 7 && $diff->days > 1) {
                 $weather = $this->displayWeather($sportSession);
+                $canPracticeOutside = $this->canPracticeOutside($weather);
+                if ($canPracticeOutside) {
+                    $sportSession->setPalce('Stade des Cézeaux');
+                } else {
+                    $sportSession->setPalce('Hoops Factory');
+                }
+                $this->em->persist($sportSession);
+                $this->em->flush();
+            }elseif ($diff->days > 7) {
+                return $this->render('home/toosoon.html.twig');
             }
 
-            $canPracticeOutside = $this->canPracticeOutside($weather);
-
             return $this->render('home/preview.html.twig', [
-                'canPracticeOutside' => $canPracticeOutside,
+                'practicePlace' => $sportSession->getPalce(),
             ]);
         }
 
