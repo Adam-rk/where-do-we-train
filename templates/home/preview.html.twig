@@ -1,7 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-        <h1>Votre prochaine séance de sport se déroulera au {{ practicePlace }}.</h1>
+        <h2 class="preview-title">Votre prochaine séance de sport se déroulera au</h2>
+        <div class="preview-title-line-container">
+                <h2 class="preview-title-place">{{ practicePlace }}</h2>
+                <div class="preview-title-line"></div>
+        </div>
 {% endblock %}
 
 {% block title %}
