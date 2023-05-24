@@ -3,10 +3,15 @@
 {% block title %}Hello HomeController!{% endblock %}
 
 {% block body %}
-    <h1>Quelle promotion voulez-vous voir ?</h1>
-    <a href="{{ path('preview', {'promotion': 'B1'}) }}">B1</a>
-    <a href="{{ path('preview', {'promotion': 'B2'}) }}">B2</a>
-    <a href="{{ path('preview', {'promotion': 'B3'}) }}">B3</a>
-    <a href="{{ path('preview', {'promotion': 'M1'}) }}">M1</a>
-    <a href="{{ path('preview', {'promotion': 'M2'}) }}">M2</a>
+
+
+    <h2 class="choice-title">Quelle promotion voulez-vous voir ?</h2>
+    <div class="button-container">
+        <a class="buttons" href="{{ path('preview', {'promotion': 'B1'}) }}">B1</a>
+        <a class="buttons" href="{{ path('preview', {'promotion': 'B2'}) }}">B2</a>
+        <a class="buttons" href="{{ path('preview', {'promotion': 'B3'}) }}">B3</a>
+        <a class="buttons" href="{{ path('preview', {'promotion': 'M1'}) }}">M1</a>
+        <a class="buttons" href="{{ path('preview', {'promotion': 'M2'}) }}">M2</a>
+    </div>
+
 {% endblock %}
