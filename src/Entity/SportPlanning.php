@@ -17,16 +17,13 @@ class SportPlanning
     private ?string $promotion = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $date = null;
+    private ?\DateTime $startingDateTime = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $startTime = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $endTime = null;
+    private ?\DateTime $endingDateTime = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $palce = null;
+    private ?string $place = null;
 
     public function getId(): ?int
     {
@@ -45,50 +42,38 @@ class SportPlanning
         return $this;
     }
 
-    public function getDate(): ?string
+    public function getStartingDateTime(): \DateTime
     {
-        return $this->date;
+        return $this->startingDateTime;
     }
 
-    public function setDate(string $date): self
+    public function setStartingDateTime(\DateTime $startingDateTime): self
     {
-        $this->date = $date;
+        $this->startingDateTime = $startingDateTime;
 
         return $this;
     }
 
-    public function getStartTime(): ?string
+    public function getEndingDateTime(): \DateTime
     {
-        return $this->startTime;
+        return $this->endingDateTime;
     }
 
-    public function setStartTime(string $startTime): self
+    public function setEndingDateTime(\DateTime $endingDateTime): self
     {
-        $this->startTime = $startTime;
+        $this->endingDateTime = $endingDateTime;
 
         return $this;
     }
 
-    public function getEndTime(): ?string
+    public function getPlace(): ?string
     {
-        return $this->endTime;
+        return $this->place;
     }
 
-    public function setEndTime(string $endTime): self
+    public function setPlace(?string $place): self
     {
-        $this->endTime = $endTime;
-
-        return $this;
-    }
-
-    public function getPalce(): ?string
-    {
-        return $this->palce;
-    }
-
-    public function setPalce(?string $palce): self
-    {
-        $this->palce = $palce;
+        $this->place = $place;
 
         return $this;
     }
