@@ -6,6 +6,9 @@
                 <h2 class="preview-title-place">{{ practicePlace }}</h2>
                 <div class="preview-title-line"></div>
         </div>
+        <h3 class="data">Temperature moyenne: {{ avgWeather.avg_temp }} °C</h3>
+        <h3 class="data">Precipitation: {{ avgWeather.avg_precipitation }} %</h3>
+        <h3 class="data">Probabilité de précipitation: {{ avgWeather.avg_precipitation_proba }} %</h3>
 {% endblock %}
 
 {% block title %}

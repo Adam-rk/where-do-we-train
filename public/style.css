@@ -1,6 +1,3 @@
-
-
-
 body {
     background-color: #221f1f;
     height: 100vh;
@@ -44,12 +41,17 @@ body {
     font-family: 'CircularLight', serif;
     font-size: 150%;
     color:#f5f5f1;
-    margin-bottom: 70%;
+    margin-bottom: 20%;
+}
+.data {
+    font-family: 'CircularLight', serif;
+    font-size: 100%;
+    color:#f5f5f1;
 }
 .choice-title, .soon-title, .preview-title, .no-sessions-title {
     text-align: center;
     font-size: 250%;
-    margin-bottom: 20%;
+    margin-bottom: 5%;
     color:  #f5f5f1;
     font-family: 'NetflixSansBold', serif;
     font-weight: normal;
@@ -82,30 +84,16 @@ body {
     src: url("./fonts/CircularStd-Light.otf");
 }
 /*
-@media screen and (min-width: 400px) {
-    .main-title {
-        font-size: 300%;
-    }
-
+@media screen and (max-width: 400px) {
     .subtitle {
-        font-size: 100%;
-        margin-bottom: 50%;
+        margin-bottom: 70%;
     }
 
     .choice-title, .soon-title, .preview-title, .no-sessions-title {
-        font-size: 150%;
-        margin-bottom: 5%;
+
+        margin-bottom: 20%;
     }
-    .preview-title-place {
-        font-size: 200%;
-    }
-    .buttons {
-        font-size: 200%;
-        padding: 8%;
-    }
-    .buttons:hover {
-        background-color: rgba(240, 56, 107, 0.75);
-    }
+
 
 }
 */

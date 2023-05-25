@@ -49,6 +49,7 @@ class HomeController extends AbstractController
 
             if ($diff->days <= 7 && $diff->days > 1) {
                 $weather = $this->weatherApi->getWeather($sportSession);
+                $this->getAverageWeather($weather);
                 $canPracticeOutside = $this->canPracticeOutside($weather);
                 if ($canPracticeOutside) {
                     $sportSession->setPlace('Stade des Cézeaux');
@@ -61,8 +62,12 @@ class HomeController extends AbstractController
                 return $this->render('home/toosoon.html.twig');
             }
 
+            $avgWeather = $this->getAverageWeather($weather);
+
+
             return $this->render('home/preview.html.twig', [
                 'practicePlace' => $sportSession->getPlace(),
+                'avgWeather' => $avgWeather
             ]);
         }
 
@@ -75,5 +80,26 @@ class HomeController extends AbstractController
             }
             return true;
         }
+    }
+
+    private function getAverageWeather(array $weather): array {
+        $avgTemperature = 0;
+        $avgPrecipitation = 0;
+        $avgPrecipitationProbability = 0;
+        foreach ($weather as $hourlyWeather) {
+            $avgTemperature += $hourlyWeather["temperature"];
+            $avgPrecipitation += $hourlyWeather["precipitation"];
+            $avgPrecipitationProbability += $hourlyWeather["precipitation_probability"];
+        }
+        $avgTemperature /= count($weather);
+        $avgPrecipitation /= count($weather);
+        $avgPrecipitationProbability /= count($weather);
+
+        $avgWeather = [
+            "avg_temp" => round($avgTemperature),
+            "avg_precipitation" => round($avgPrecipitation),
+            "avg_precipitation_proba" => round($avgPrecipitationProbability)
+        ];
+        return $avgWeather;
     }
 }
