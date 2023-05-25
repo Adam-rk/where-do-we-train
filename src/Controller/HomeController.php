@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\SportPlanning;
 use App\Repository\SportPlanningRepository;
+use App\Service\Session;
 use App\Service\WeatherApi;
 use Cassandra\Date;
 use DateTime;
@@ -20,7 +21,7 @@ class HomeController extends AbstractController
 {
     public function __construct(
         private WeatherApi $weatherApi,
-        private EntityManagerInterface $em,
+        private Session $session,
         private SportPlanningRepository $planningRepository
     )
     {
@@ -38,6 +39,7 @@ class HomeController extends AbstractController
     public function preview($promotion): Response {
         $sportSessions = $this->planningRepository->findBy(['promotion' => $promotion]);
 
+
         if (empty($sportSessions)) {
             return $this->render('home/nosessions.html.twig');
         }
@@ -48,20 +50,15 @@ class HomeController extends AbstractController
             $diff = $date->diff(new \DateTime($currentDate));
 
             if ($diff->days <= 7 && $diff->days > 1) {
-                $weather = $this->weatherApi->getWeather($sportSession);
-                $this->getAverageWeather($weather);
-                $canPracticeOutside = $this->canPracticeOutside($weather);
-                if ($canPracticeOutside) {
-                    $sportSession->setPlace('Stade des Cézeaux');
-                } else {
-                    $sportSession->setPlace('Hoops Factory');
-                }
-                $this->em->persist($sportSession);
-                $this->em->flush();
+
+                $this->session->setPlace($sportSession);
+
             }elseif ($diff->days > 7) {
                 return $this->render('home/toosoon.html.twig');
+            } else {
+                return $this->render('home/nosessions.html.twig');
             }
-
+            $weather = $this->weatherApi->getWeather($sportSession);
             $avgWeather = $this->getAverageWeather($weather);
 
 
@@ -71,15 +68,6 @@ class HomeController extends AbstractController
             ]);
         }
 
-    }
-
-    private function canPracticeOutside(array $weather) {
-        foreach ($weather as $hourlyWeather) {
-            if ($hourlyWeather["temperature"] < 10 || $hourlyWeather["precipitation_probability"] > 50 || $hourlyWeather["precipitation"] > 0) {
-                return false;
-            }
-            return true;
-        }
     }
 
     private function getAverageWeather(array $weather): array {

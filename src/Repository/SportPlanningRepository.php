@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\SportPlanning;
+use DateInterval;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -22,14 +24,14 @@ class SportPlanningRepository extends ServiceEntityRepository
     }
 
     public function getLessThanADay() {
-        $dateTimeThreshold = new \DateTime('-24 hours');
 
-        $qb = $this->createQueryBuilder('e');
-        $qb->where('e.startingDateTime < :threshold')
-            ->setParameter('threshold', $dateTimeThreshold)
-            ->orderBy('e.startingDateTime', 'DESC');
+        $qb = $this->createQueryBuilder('p')
+            ->where(':nowPlus24Hours > p.startingDateTime')
+            ->andWhere('p.place IS NULL')
+            ->setParameter('nowPlus24Hours', (new DateTime())->add(new DateInterval('P1D')));
+        $query = $qb->getQuery();
 
-        return $qb->getQuery()->getResult();
+        return $query->execute();
     }
     public function save(SportPlanning $entity, bool $flush = false): void
     {
