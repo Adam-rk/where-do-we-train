@@ -43,9 +43,10 @@ class UpdatePlaceCommand extends Command
 
         foreach ($sportSessions as $sportSession) {
             $this->session->setPlace($sportSession);
+            $io->success("Le lieu a été ajouté avec succès pour la session ".$sportSession->getPromotion().": ".$sportSession->getStartingDateTime()->format('Y-m-d H:i')." - ".$sportSession->getEndingDateTime()->format('Y-m-d H:i')." ".$sportSession->getPlace());
         }
 
-        $io->success("Le lieu a été ajouté avec succès");
+
         return Command::SUCCESS;
     }
 }

@@ -59,7 +59,7 @@ class HomeController extends AbstractController
                 return $this->render('home/nosessions.html.twig');
             }
             $weather = $this->weatherApi->getWeather($sportSession);
-            $avgWeather = $this->getAverageWeather($weather);
+            $avgWeather = $this->weatherApi->getAverageWeather($weather);
 
 
             return $this->render('home/preview.html.twig', [
@@ -70,24 +70,5 @@ class HomeController extends AbstractController
 
     }
 
-    private function getAverageWeather(array $weather): array {
-        $avgTemperature = 0;
-        $avgPrecipitation = 0;
-        $avgPrecipitationProbability = 0;
-        foreach ($weather as $hourlyWeather) {
-            $avgTemperature += $hourlyWeather["temperature"];
-            $avgPrecipitation += $hourlyWeather["precipitation"];
-            $avgPrecipitationProbability += $hourlyWeather["precipitation_probability"];
-        }
-        $avgTemperature /= count($weather);
-        $avgPrecipitation /= count($weather);
-        $avgPrecipitationProbability /= count($weather);
 
-        $avgWeather = [
-            "avg_temp" => round($avgTemperature),
-            "avg_precipitation" => round($avgPrecipitation),
-            "avg_precipitation_proba" => round($avgPrecipitationProbability)
-        ];
-        return $avgWeather;
-    }
 }

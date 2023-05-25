@@ -35,21 +35,22 @@ class WeatherApi
 
         $weatherData = $response->toArray();
 
-        $daysAndHours= $weatherData["hourly"]["time"];
-
-        $temperatures = $weatherData["hourly"]["temperature_2m"];
-
-        $precipitationProbabilities = $weatherData["hourly"]["precipitation_probability"];
-
-        $precipitations = $weatherData["hourly"]["precipitation"];
+        [
+            'hourly' => [
+                'time' => $daysAndHours,
+                'temperature_2m' => $temperatures,
+                'precipitation_probability' => $precipitationProbabilities,
+                'precipitation' => $precipitations
+            ]
+        ] = $weatherData;
 
         $clearData = [];
 
         $startTime = $sportSession->getStartingDateTime()->format('H:i');
         $endTime = $sportSession->getEndingDateTime()->format('H:i');
 
-        for ($i = 0; $i < count($daysAndHours); $i++) {
-            $hourOfDay = substr($daysAndHours[$i], 11, 5);
+        foreach ($daysAndHours as $i => $dayAndHour) {
+            $hourOfDay = substr($dayAndHour, 11, 5);
             $hourOfDayFormated = DateTime::createFromFormat('H:i', $hourOfDay)->format('H:i');
 
 
@@ -65,4 +66,26 @@ class WeatherApi
 
         return $clearData;
     }
+
+    public function getAverageWeather(array $weather): array {
+        $avgTemperature = 0;
+        $avgPrecipitation = 0;
+        $avgPrecipitationProbability = 0;
+        foreach ($weather as $hourlyWeather) {
+            $avgTemperature += $hourlyWeather["temperature"];
+            $avgPrecipitation += $hourlyWeather["precipitation"];
+            $avgPrecipitationProbability += $hourlyWeather["precipitation_probability"];
+        }
+        $avgTemperature /= count($weather);
+        $avgPrecipitation /= count($weather);
+        $avgPrecipitationProbability /= count($weather);
+
+        $avgWeather = [
+            "avg_temp" => round($avgTemperature),
+            "avg_precipitation" => round($avgPrecipitation),
+            "avg_precipitation_proba" => round($avgPrecipitationProbability)
+        ];
+        return $avgWeather;
+    }
 }
+
