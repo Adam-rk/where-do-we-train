@@ -21,6 +21,16 @@ class SportPlanningRepository extends ServiceEntityRepository
         parent::__construct($registry, SportPlanning::class);
     }
 
+    public function getLessThanADay() {
+        $dateTimeThreshold = new \DateTime('-24 hours');
+
+        $qb = $this->createQueryBuilder('e');
+        $qb->where('e.startingDateTime < :threshold')
+            ->setParameter('threshold', $dateTimeThreshold)
+            ->orderBy('e.startingDateTime', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
     public function save(SportPlanning $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
