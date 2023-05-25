@@ -2,7 +2,11 @@
 
 namespace App\Command;
 
+use App\Entity\SportPlanning;
 use App\Repository\SportPlanningRepository;
+use App\Service\Session;
+use App\Service\WeatherApi;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -17,9 +21,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class UpdatePlaceCommand extends Command
 {
-    public function __construct(string $name = null, private SportPlanningRepository $planningRepository)
+    public function __construct(private EntityManagerInterface $entityManager, private Session $session)
     {
-        parent::__construct($name);
+        parent::__construct();
     }
 
     protected function configure(): void
@@ -33,11 +37,15 @@ class UpdatePlaceCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $repository = $this->entityManager->getRepository(SportPlanning::class);
 
-        $this->planningRepository->getLessThanADay();
-        
+        $sportSessions = $repository->getLessThanADay();
 
+        foreach ($sportSessions as $sportSession) {
+            $this->session->setPlace($sportSession);
+        }
 
+        $io->success("Le lieu a été ajouté avec succès");
         return Command::SUCCESS;
     }
 }
