@@ -33,6 +33,24 @@ class SportPlanningRepository extends ServiceEntityRepository
 
         return $query->execute();
     }
+    public function getNextWeekSessionsByPromotion($promotion)
+    {
+        $now = new DateTime();
+        $nextWeek = (clone $now)->add(new DateInterval('P7D'));
+
+        $qb = $this->createQueryBuilder('p')
+            ->where('p.startingDateTime >= :now')
+            ->andWhere('p.startingDateTime < :nextWeek')
+            ->andWhere('p.promotion = :promotion')
+            ->setParameters([
+                'now' => $now,
+                'nextWeek' => $nextWeek,
+                'promotion' => $promotion
+            ]);
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
     public function save(SportPlanning $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
