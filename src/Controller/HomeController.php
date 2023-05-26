@@ -37,11 +37,11 @@ class HomeController extends AbstractController
     }
     #[Route('/preview/{promotion}', name: 'preview')]
     public function preview($promotion): Response {
-        $sportSessions = $this->planningRepository->findBy(['promotion' => $promotion]);
+        $sportSessions = $this->planningRepository->getNextWeekSessionsByPromotion($promotion);
 
 
         if (empty($sportSessions)) {
-            return $this->render('home/nosessions.html.twig');
+            return $this->render('home/toosoon.html.twig');
         }
 
         $currentDate = date('Y-m-d');
@@ -49,21 +49,19 @@ class HomeController extends AbstractController
             $date = $sportSession->getStartingDateTime();
             $diff = $date->diff(new \DateTime($currentDate));
 
-            if ($diff->days <= 7 && $diff->days > 1) {
-
-                $this->session->setPlace($sportSession);
-
-            }elseif ($diff->days > 7) {
-                return $this->render('home/toosoon.html.twig');
+            if ($sportSession->getPlace() === null) {
+                $practicePlace = $this->session->setPlace($sportSession, false);
             } else {
-                return $this->render('home/nosessions.html.twig');
+                $practicePlace = $sportSession->getPlace();
             }
+
+
             $weather = $this->weatherApi->getWeather($sportSession);
             $avgWeather = $this->weatherApi->getAverageWeather($weather);
 
 
             return $this->render('home/preview.html.twig', [
-                'practicePlace' => $sportSession->getPlace(),
+                'practicePlace' => $practicePlace,
                 'avgWeather' => $avgWeather
             ]);
         }

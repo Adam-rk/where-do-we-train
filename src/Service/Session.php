@@ -16,16 +16,25 @@ class Session
 
     }
 
-    public function setPlace(SportPlanning $sportSession) {
+    public function setPlace(SportPlanning $sportSession, bool $flush = true) {
         $weather = $this->weatherApi->getWeather($sportSession);
         $canPracticeOutside = $this->canPracticeOutside($weather);
-        if ($canPracticeOutside) {
-            $sportSession->setPlace('Stade des Cézeaux');
+
+        if ($flush) {
+            if ($canPracticeOutside) {
+                $sportSession->setPlace('Stade des Cézeaux');
+            } else {
+                $sportSession->setPlace('Hoops Factory');
+            }
+            $this->em->persist($sportSession);
+            $this->em->flush();
         } else {
-            $sportSession->setPlace('Hoops Factory');
+            if ($canPracticeOutside) {
+                return 'Stade des Cézeaux';
+            }
+            return 'Hoops Factory';
         }
-        $this->em->persist($sportSession);
-        $this->em->flush();
+
     }
 
     private function canPracticeOutside(array $weather) {
