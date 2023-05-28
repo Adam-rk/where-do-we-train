@@ -19,7 +19,7 @@ class Session
     public function setPlace(SportPlanning $sportSession, bool $flush = true) {
         $weather = $this->weatherApi->getWeather($sportSession);
         $canPracticeOutside = $this->canPracticeOutside($weather);
-
+ 
         if ($flush) {
             if ($canPracticeOutside) {
                 $sportSession->setPlace('Stade des Cézeaux');

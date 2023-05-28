@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\SportPlanningRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 #[ORM\Entity(repositoryClass: SportPlanningRepository::class)]
 class SportPlanning
@@ -19,7 +21,9 @@ class SportPlanning
     #[ORM\Column(length: 255)]
     private ?\DateTime $startingDateTime = null;
 
+
     #[ORM\Column(length: 255)]
+    #[Assert\NotEqualTo(propertyPath: "startingDateTime")]
     private ?\DateTime $endingDateTime = null;
 
     #[ORM\Column(length: 255, nullable: true)]
