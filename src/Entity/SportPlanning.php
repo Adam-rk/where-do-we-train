@@ -15,8 +15,8 @@ class SportPlanning
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $promotion = null;
+    #[ORM\Column]
+    private array $promotion = [];
 
     #[ORM\Column(length: 255)]
     private ?\DateTime $startingDateTime = null;
@@ -34,12 +34,12 @@ class SportPlanning
         return $this->id;
     }
 
-    public function getPromotion(): ?string
+    public function getPromotion(): ?array
     {
         return $this->promotion;
     }
 
-    public function setPromotion(string $promotion): self
+    public function setPromotion(array $promotion): self
     {
         $this->promotion = $promotion;
 

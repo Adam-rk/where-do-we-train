@@ -41,15 +41,18 @@ class SportPlanningRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')
             ->where('p.startingDateTime >= :now')
             ->andWhere('p.startingDateTime < :nextWeek')
-            ->andWhere('p.promotion = :promotion')
             ->setParameters([
                 'now' => $now,
-                'nextWeek' => $nextWeek,
-                'promotion' => $promotion
+                'nextWeek' => $nextWeek
             ]);
-        $query = $qb->getQuery();
 
-        return $query->execute();
+        $query = $qb->getQuery();
+        $results = $query->getResult();
+
+        return array_filter($results, function ($result) use ($promotion) {
+
+            return in_array($promotion, $result->getPromotion());
+        });
     }
     public function save(SportPlanning $entity, bool $flush = false): void
     {
