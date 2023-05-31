@@ -65,6 +65,15 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "manage-db" : [
+            "php bin/console doctrine:database:drop --force --if-exists",
+            "php bin/console doctrine:database:create",
+            "php bin/console doctrine:schema:update --force"
+        ],
+        "install-project": [
+            "@manage-db",
+            "php bin/console app:update-place"
         ]
     },
     "conflict": {
