@@ -9,8 +9,8 @@ use Doctrine\ORM\EntityManagerInterface;
 class Session
 {
     public function __construct(
-        private WeatherApi $weatherApi,
-        private EntityManagerInterface $em
+        private readonly WeatherApi $weatherApi,
+        private readonly EntityManagerInterface $em
     )
     {
 
@@ -19,7 +19,7 @@ class Session
     public function setPlace(SportPlanning $sportSession, bool $flush = true) {
         $weather = $this->weatherApi->getWeather($sportSession);
         $canPracticeOutside = $this->canPracticeOutside($weather);
- 
+
         if ($flush) {
             if ($canPracticeOutside) {
                 $sportSession->setPlace('Stade des Cézeaux');

@@ -42,8 +42,6 @@ class UpdatePlaceCommand extends Command
             $io->success("Le lieu a été ajouté avec succès pour la session ".implode(', ',$sportSession->getPromotion()).": ".$sportSession->getStartingDateTime()->format('Y-m-d H:i')." - ".$sportSession->getEndingDateTime()->format('Y-m-d H:i')." ".$sportSession->getPlace());
         }
 
-
-
         return Command::SUCCESS;
     }
 }

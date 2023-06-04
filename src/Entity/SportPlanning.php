@@ -18,11 +18,10 @@ class SportPlanning
     #[ORM\Column]
     private array $promotion = [];
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     private ?\DateTime $startingDateTime = null;
 
-
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     #[Assert\NotEqualTo(propertyPath: "startingDateTime")]
     private ?\DateTime $endingDateTime = null;
 
