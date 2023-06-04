@@ -72,6 +72,7 @@
             "php bin/console doctrine:schema:update --force"
         ],
         "install-project": [
+            "composer install",
             "@manage-db",
             "php bin/console app:update-place"
         ]
